@@ -9,4 +9,6 @@ public class ApplicationCommand
     public string? GitHubToken { get; set; }
     
     public string? BaseFile { get; set; }
+    
+    public bool Validate { get; set; }
 }
