@@ -90,7 +90,7 @@ foreach (var mfPath in manifests)
         Console.Error.WriteLine($"::error file={mfPath},line=1::{e.Message}");
         if (command.Validate)
         {
-            throw;
+            Environment.Exit(1);
         }
     }
 }
