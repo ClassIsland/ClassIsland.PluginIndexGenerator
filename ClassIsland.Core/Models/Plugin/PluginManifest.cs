@@ -54,9 +54,14 @@ public class PluginManifest : ObservableRecipient
     /// 插件目标 ClassIsland 版本
     /// </summary>
     public string ApiVersion { get; set; } = "";
-    
+
     /// <summary>
     /// 插件作者
     /// </summary>
     public string Author { get; set; } = "";
+
+    /// <summary>
+    /// 插件需要的依赖
+    /// </summary>
+    public List<PluginDependency> Dependencies { get; set; } = [];
 }

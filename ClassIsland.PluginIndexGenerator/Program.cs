@@ -69,6 +69,9 @@ foreach (var mfPath in manifests)
             throw new InvalidOperationException(
                 $"插件 {manifest.Id} 的仓库路径 {manifest.RepoOwner}/{manifest.RepoName} 中最新的发行版中没有有效的插件包资产。");
         }
+        
+        var releases = await github.Repository.Release.GetAll("所有者", "仓库名");
+        var totalDownloads = releases.SelectMany(release => release.Assets).Aggregate<ReleaseAsset, long>(0, (current, i) => current + i.DownloadCount);
 
         var md5 = ChecksumHelper.ExtractHashInfo(latest.Body, asset.Name);
         manifest.Version = latest.TagName;
@@ -80,7 +83,9 @@ foreach (var mfPath in manifests)
             DownloadMd5 = md5,
             DownloadUrl = asset.BrowserDownloadUrl.Replace(root, "{root}"),
             RealIconPath =
-                $"{{root}}/{manifest.RepoOwner}/{manifest.RepoName}/raw/{manifest.AssetsRoot}/{manifest.Icon}"
+                $"{{root}}/{manifest.RepoOwner}/{manifest.RepoName}/raw/{manifest.AssetsRoot}/{manifest.Icon}",
+            StarsCount = repo.StargazersCount,
+            DownloadCount = totalDownloads
         });
         Console.WriteLine($"成功添加插件 {manifest.Id}");
     }

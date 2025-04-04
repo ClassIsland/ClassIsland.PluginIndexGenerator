@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Text.Json.Serialization;
 using ClassIsland.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -14,6 +14,9 @@ public class PluginInfo() : ObservableRecipient
     private bool _isAvailableOnMarket = false;
     private PluginManifest _manifest = new();
     private bool _restartRequired = false;
+    private bool _isUpdateAvailable = false;
+    private long _downloadCount = 0;
+    private long _starsCount = 0;
 
     /// <summary>
     /// 插件元数据
@@ -38,7 +41,6 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 插件是否已启用
     /// </summary>
-
     [JsonIgnore]
     public bool IsEnabled
     {
@@ -53,6 +55,7 @@ public class PluginInfo() : ObservableRecipient
             if (!IsLocal)
                 throw new InvalidOperationException("无法为不存在本地的插件设置启用状态。");
             var path = Path.Combine(PluginFolderPath, ".disabled");
+            RestartRequired = true;
             if (value)
             {
                 File.Delete(path);
@@ -68,7 +71,6 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 插件是否将要卸载
     /// </summary>
-
     [JsonIgnore]
     public bool IsUninstalling
     {
@@ -99,26 +101,23 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 插件文件路径。
     /// </summary>
-
     [JsonIgnore]
     public string PluginFolderPath { get; internal set; } = "";
 
     /// <summary>
     /// 图标真实路径
     /// </summary>
-    public string RealIconPath { get; internal set; } = "";
+    public string RealIconPath { get; set; } = "";
 
     /// <summary>
     /// 插件加载时错误
     /// </summary>
-
     [JsonIgnore]
     public Exception? Exception { get; internal set; }
 
     /// <summary>
     /// 插件加载状态
     /// </summary>
-
     [JsonIgnore]
     public PluginLoadStatus LoadStatus { get; internal set; } = PluginLoadStatus.NotLoaded;
 
@@ -164,6 +163,49 @@ public class PluginInfo() : ObservableRecipient
         {
             if (value == _restartRequired) return;
             _restartRequired = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 插件是否有更新可用。
+    /// </summary>
+    [JsonIgnore]
+    public bool IsUpdateAvailable
+    {
+        get => _isUpdateAvailable;
+        set
+        {
+            if (value == _isUpdateAvailable) return;
+            _isUpdateAvailable = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 插件下载量
+    /// </summary>
+    public long DownloadCount
+    {
+        get => _downloadCount;
+        set
+        {
+            if (value == _downloadCount) return;
+            _downloadCount = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 插件 Stars 数量
+    /// </summary>
+    public long StarsCount
+    {
+        get => _starsCount;
+        set
+        {
+            if (value == _starsCount) return;
+            _starsCount = value;
             OnPropertyChanged();
         }
     }
