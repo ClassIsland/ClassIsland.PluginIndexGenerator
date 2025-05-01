@@ -20,7 +20,7 @@ public class PluginIndexGenerator(GitHubClient client, string indexBasePath, str
             try
             {
                 var repo = await GetRepository(manifest);
-                var (downloadUrl, md5, downloadCount, latest) = await GetArtifactDownloadInfoAsync(manifest, repo,  x => x.Name.EndsWith(".zip"));
+                var (downloadUrl, md5, downloadCount, latest) = await GetArtifactDownloadInfoAsync(manifest, repo,  x => string.IsNullOrWhiteSpace(manifest.ArtifactName) ? x.Name.EndsWith(".cipx") : x.Name == manifest.ArtifactName);
                 manifest.Version = latest.TagName;
                 manifest.Readme =
                     $"{{root}}/{manifest.RepoOwner}/{manifest.RepoName}/raw/{manifest.AssetsRoot}/{manifest.Readme}";

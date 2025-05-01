@@ -16,7 +16,7 @@ public class ThemeIndexGenerator(GitHubClient client, string indexBasePath, stri
             try
             {
                 var repo = await GetRepository(manifest);
-                var (downloadUrl, md5, downloadCount, latest) = await GetArtifactDownloadInfoAsync(manifest, repo,  x => x.Name.EndsWith(".cipx"));
+                var (downloadUrl, md5, downloadCount, latest) = await GetArtifactDownloadInfoAsync(manifest, repo,  x => string.IsNullOrWhiteSpace(manifest.ArtifactName) ? x.Name.EndsWith(".zip") : x.Name == manifest.ArtifactName);
                 manifest.Version = latest.TagName;
                 index.Themes.Add(new ThemeIndexItem()
                 {
