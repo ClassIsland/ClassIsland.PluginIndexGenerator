@@ -35,4 +35,9 @@ Console.Write($"正在生成插件索引: {pluginIndexBasePath}");
 var pluginIndexGenerator = new PluginIndexGenerator(github, pluginIndexBasePath, Path.Combine(output, "index.json"), indexBase);
 await pluginIndexGenerator.GenerateIndexAsync();
 
+var themeIndexBasePath = Path.Combine(input, "themes");
+Console.Write($"正在生成主题索引: {themeIndexBasePath}");
+var themeIndexGenerator = new ThemeIndexGenerator(github, themeIndexBasePath, Path.Combine(output, "themes.json"));
+await themeIndexGenerator.GenerateIndexAsync();
+
 Console.Write("OK!");

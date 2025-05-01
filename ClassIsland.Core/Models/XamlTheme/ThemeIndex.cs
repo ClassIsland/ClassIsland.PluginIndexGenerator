@@ -11,5 +11,5 @@ public class ThemeIndex
     /// <summary>
     /// 主题仓库包含的主题列表
     /// </summary>
-    public ObservableCollection<PluginIndexItem> Themes { get; set; } = [];
+    public ObservableCollection<ThemeIndexItem> Themes { get; set; } = [];
 }
