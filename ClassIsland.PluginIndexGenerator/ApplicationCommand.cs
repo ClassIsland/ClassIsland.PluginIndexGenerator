@@ -11,4 +11,6 @@ public class ApplicationCommand
     public string? BaseFile { get; set; }
     
     public bool Validate { get; set; }
+
+    public static ApplicationCommand Instance { get; set; } = new();
 }

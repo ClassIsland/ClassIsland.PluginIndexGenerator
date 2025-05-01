@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.Json.Serialization;
+using ClassIsland.Core.Abstractions.Models.Marketplace;
 using ClassIsland.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -8,7 +9,7 @@ namespace ClassIsland.Core.Models.Plugin;
 /// <summary>
 /// 插件信息
 /// </summary>
-public class PluginInfo() : ObservableRecipient
+public class PluginInfo : ObservableRecipient, IMarketplaceItemInfo
 {
     private DownloadProgress? _downloadProgress;
     private bool _isAvailableOnMarket = false;
@@ -121,6 +122,9 @@ public class PluginInfo() : ObservableRecipient
     [JsonIgnore]
     public PluginLoadStatus LoadStatus { get; internal set; } = PluginLoadStatus.NotLoaded;
 
+    /// <inheritdoc />
+    [JsonIgnore]
+    public IMarketplaceItemManifest ManifestReadonly => Manifest;
 
     /// <summary>
     /// 是否在插件市场上可用
