@@ -3,6 +3,7 @@ using System.Text.Json;
 using ClassIsland.Core.Abstractions.Models.Marketplace;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Plugin;
+using Microsoft.Extensions.FileSystemGlobbing;
 using Octokit;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -69,8 +70,16 @@ public abstract class MarketplaceIndexGeneratorBase<TRepoManifest, TIndexInfo> :
     
     protected async Task<(string, string, long, Release)> GetArtifactDownloadInfoAsync(TRepoManifest manifest, Repository repo, Func<ReleaseAsset, bool> matchAsset)
     {
+        var matcher = new Matcher();
+        var usePattern = manifest.TagPattern != null;
+        if (usePattern)
+        {
+            matcher.AddInclude(manifest.TagPattern);
+        }
         var latest = (await Client.Repository.Release.GetAll(repo.Id))
-            .Where(x => Version.TryParse(x.TagName, out _)).MaxBy(x => Version.Parse(x.TagName));
+            .Where(x => !usePattern || matcher.Match(x.TagName).HasMatches)
+            .Where(x => Version.TryParse(x.TagName, out _))
+            .MaxBy(x => Version.Parse(x.TagName));
         if (latest == null)
         {
             throw new InvalidOperationException(

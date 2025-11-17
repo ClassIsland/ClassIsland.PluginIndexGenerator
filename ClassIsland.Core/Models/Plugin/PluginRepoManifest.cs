@@ -29,4 +29,7 @@ public class PluginRepoManifest : PluginManifest, IMarketplaceItemRepoManifest
     /// 插件发布工件名称。留空将匹配 *.cipx 的发布工件。
     /// </summary>
     public string? ArtifactName { get; set; }
+
+    /// <inheritdoc/>
+    public string? TagPattern { get; set; }
 }

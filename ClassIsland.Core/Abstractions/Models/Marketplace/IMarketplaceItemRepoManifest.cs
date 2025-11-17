@@ -23,4 +23,9 @@ public interface IMarketplaceItemRepoManifest : IMarketplaceItemManifest
     /// 发布工件名称。
     /// </summary>
     public string? ArtifactName { get; set; }
+    
+    /// <summary>
+    /// 要匹配的 Tag 模式。如果设置，将查找匹配这个模式的 Tag
+    /// </summary>
+    public string? TagPattern { get; set; }
 }
