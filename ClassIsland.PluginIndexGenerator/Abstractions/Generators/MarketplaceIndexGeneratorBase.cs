@@ -9,7 +9,13 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace ClassIsland.PluginIndexGenerator.Abstractions.Generators;
 
-public abstract class MarketplaceIndexGeneratorBase<TRepoManifest, TIndexInfo> where TRepoManifest : class, IMarketplaceItemRepoManifest
+public abstract class MarketplaceIndexGeneratorBase
+{
+    public abstract Task GenerateIndexAsync();
+}
+
+public abstract class MarketplaceIndexGeneratorBase<TRepoManifest, TIndexInfo> : MarketplaceIndexGeneratorBase
+    where TRepoManifest : class, IMarketplaceItemRepoManifest
     where TIndexInfo : class, IMarketplaceItemInfo
 {
     protected MarketplaceIndexGeneratorBase(GitHubClient client, string indexBasePath, string indexOutputFilePath)
@@ -84,7 +90,5 @@ public abstract class MarketplaceIndexGeneratorBase<TRepoManifest, TIndexInfo> w
 
         return (asset.BrowserDownloadUrl.Replace(DownloadRoot, DownloadRootTemplate), md5, totalDownloads, latest);
     }
-
-    public abstract Task GenerateIndexAsync();
     
 }

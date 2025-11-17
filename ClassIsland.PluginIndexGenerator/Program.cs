@@ -1,8 +1,12 @@
 ﻿using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
 using ClassIsland.PluginIndexGenerator;
+using ClassIsland.PluginIndexGenerator.Abstractions.Generators;
 using ClassIsland.PluginIndexGenerator.Generators;
+using ClassIsland.PluginIndexGenerator.Models.Configurations;
 using Octokit;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 var rootCmd = new RootCommand
 {
@@ -20,8 +24,14 @@ await rootCmd.InvokeAsync(args);
 ApplicationCommand.Instance = command;
 var input = command.InputDir;
 var output = command.Output;
+var configPath = Path.Combine(input, "./config.yml");
 var indexBase = command.BaseFile;
 var token = command.GitHubToken;
+var deserializer = new DeserializerBuilder()
+    .IgnoreUnmatchedProperties()
+    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+    .Build();
+var config = deserializer.Deserialize<Configuration>(File.ReadAllText(configPath));
 
 
 var github = new GitHubClient(new ProductHeaderValue("ClassIsland.PluginIndexGenerator"));
@@ -30,14 +40,17 @@ if (!string.IsNullOrEmpty(token))
     github.Credentials = new Credentials(token);
 }
 
-var pluginIndexBasePath = Path.Combine(input, "plugins");
-Console.WriteLine($"正在生成插件索引: {pluginIndexBasePath}");
-var pluginIndexGenerator = new PluginIndexGenerator(github, pluginIndexBasePath, Path.Combine(output, "index.json"), indexBase);
-await pluginIndexGenerator.GenerateIndexAsync();
+var generatorsFactory = new Dictionary<string, Func<string, string, MarketplaceIndexGeneratorBase>>()
+{
+    { "plugin", (i, o) => new PluginIndexGenerator(github, Path.Combine(input, i), Path.Combine(output, o), indexBase) },
+    { "theme", (i, o) => new ThemeIndexGenerator(github, Path.Combine(input, i), Path.Combine(output, o)) }
+};
 
-var themeIndexBasePath = Path.Combine(input, "themes");
-Console.WriteLine($"正在生成主题索引: {themeIndexBasePath}");
-var themeIndexGenerator = new ThemeIndexGenerator(github, themeIndexBasePath, Path.Combine(output, "themes.json"));
-await themeIndexGenerator.GenerateIndexAsync();
+foreach (var info in config.Generators)
+{
+    var gen = generatorsFactory[info.Id](info.Input, info.Output);
+    Console.WriteLine($"正在生成 {info.Id} 索引: {info.Input} -> {info.Output}");
+    await gen.GenerateIndexAsync();
+}
 
 Console.WriteLine("OK!");
