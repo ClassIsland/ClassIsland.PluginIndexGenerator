@@ -1,6 +1,7 @@
-﻿using System.IO;
-using ClassIsland.Core.Abstractions.Models.Marketplace;
+﻿using ClassIsland.Core.Abstractions.Models.Marketplace;
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.IO;
+using System.Runtime.InteropServices;
 using YamlDotNet.Serialization;
 
 namespace ClassIsland.Core.Models.Plugin;
@@ -62,7 +63,9 @@ public class PluginManifest : ObservableRecipient, IMarketplaceItemManifest
     public string Author { get; set; } = "";
 
     /// <summary>
-    /// 插件需要的依赖
+    /// 插件所支持的操作系统平台。默认为所有平台。
     /// </summary>
-    public List<PluginDependency> Dependencies { get; set; } = [];
+    /// <remarks>有效值：<see cref="OSPlatform.Windows"/>和<see cref="OSPlatform.Linux"/>和<see cref="OSPlatform.OSX"/></remarks>
+    public List<OSPlatform> SupportedOSPlatforms { get; set; } = [OSPlatform.Windows, OSPlatform.OSX, OSPlatform.Linux];
+
 }

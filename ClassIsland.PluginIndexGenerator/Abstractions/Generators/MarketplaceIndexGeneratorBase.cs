@@ -30,6 +30,7 @@ public abstract class MarketplaceIndexGeneratorBase<TRepoManifest, TIndexInfo> :
             .ToList();
         var deserializer = new DeserializerBuilder()
             .IgnoreUnmatchedProperties()
+            .WithTypeConverter(new OSPlatformTypeConverter_Yaml())
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
         foreach (var mfFile in manifests)

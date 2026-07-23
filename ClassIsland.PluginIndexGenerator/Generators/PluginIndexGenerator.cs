@@ -47,6 +47,9 @@ public class PluginIndexGenerator(GitHubClient client, string indexBasePath, str
             }
         }
         
-        await File.WriteAllTextAsync(IndexOutputFilePath, JsonSerializer.Serialize(index));
+        await File.WriteAllTextAsync(IndexOutputFilePath, JsonSerializer.Serialize(index, new JsonSerializerOptions
+        {
+            Converters = { new OSPlatformConverter_Json() }
+        }));
     }
 }
