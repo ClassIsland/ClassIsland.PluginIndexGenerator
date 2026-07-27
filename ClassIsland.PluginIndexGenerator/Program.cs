@@ -29,6 +29,7 @@ var indexBase = command.BaseFile;
 var token = command.GitHubToken;
 var deserializer = new DeserializerBuilder()
     .IgnoreUnmatchedProperties()
+    .WithTypeConverter(new OSPlatformTypeConverter_Yaml())
     .WithNamingConvention(CamelCaseNamingConvention.Instance)
     .Build();
 var config = deserializer.Deserialize<Configuration>(File.ReadAllText(configPath));
