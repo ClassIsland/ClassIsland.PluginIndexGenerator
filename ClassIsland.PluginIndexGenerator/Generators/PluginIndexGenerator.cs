@@ -1,8 +1,9 @@
-using System.Collections.ObjectModel;
-using System.Text.Json;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.PluginIndexGenerator.Abstractions.Generators;
 using Octokit;
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 
 namespace ClassIsland.PluginIndexGenerator.Generators;
 
@@ -49,7 +50,21 @@ public class PluginIndexGenerator(GitHubClient client, string indexBasePath, str
         
         await File.WriteAllTextAsync(IndexOutputFilePath, JsonSerializer.Serialize(index, new JsonSerializerOptions
         {
-            Converters = { new OSPlatformConverter_Json() }
+            Converters = { new OSPlatformConverter_Json() },
+            TypeInfoResolver = new DefaultJsonTypeInfoResolver
+            {
+                Modifiers =
+                {
+                    typeInfo =>
+                    {
+                        if (typeInfo.Type != typeof(PluginManifest)) return;
+
+                        var property = typeInfo.Properties.First(x => x.Name == nameof(PluginManifest.SupportedOSPlatforms));
+                        property.ShouldSerialize = (manifest, _) =>
+                            !((PluginManifest)manifest).SupportedOSPlatforms.SequenceEqual([OSPlatform.Windows, OSPlatform.OSX, OSPlatform.Linux]);
+                    }
+                }
+            }
         }));
     }
 }

@@ -1,8 +1,5 @@
-using System.Collections.ObjectModel;
-using System.Text.Json;
 using ClassIsland.Core.Abstractions.Models.Marketplace;
 using ClassIsland.Core.Helpers;
-using ClassIsland.Core.Models.Plugin;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Octokit;
 using YamlDotNet.Serialization;
